@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 
-class UserFilters(BaseModel):
+class UserFiltersSchema(BaseModel):
     username: str | None = None

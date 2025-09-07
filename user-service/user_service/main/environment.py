@@ -40,4 +40,4 @@ def get_env_var(key: str, cast_to: Callable[[Any], T], default: T = _DEFAULT_VAL
         if default is _DEFAULT_VALUE:
             raise ValueError(f'Environment variable {key} is not specified')
         return default
-    return _cast_to(value, cast_to)
+    return _cast_to(value, cast_to)  # type: ignore

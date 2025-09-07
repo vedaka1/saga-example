@@ -1,0 +1,53 @@
+exclude: 'alembic'
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+#    -   id: check-yaml
+#    -   id: end-of-file-fixer
+#    -   id: trailing-whitespace
+    -   id: check-merge-conflict
+
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.4
+    hooks:
+    -   id: ruff
+        name: ruff
+        description: "Run 'ruff' for extremely fast Python linting"
+        entry: ruff check
+        language: python
+        types_or: [python, pyi]
+        args: [--config, user-service/pyproject.toml]
+        require_serial: true
+        additional_dependencies: []
+        minimum_pre_commit_version: "2.9.2"
+
+    -   id: ruff-format
+        name: ruff-format
+        description: "Run 'ruff format' for extremely fast Python formatting"
+        entry: ruff format
+        language: python
+        types_or: [python, pyi]
+        args: [--config, user-service/pyproject.toml]
+        require_serial: true
+        additional_dependencies: []
+        minimum_pre_commit_version: "2.9.2"
+
+-   repo: local
+    hooks:
+    -   id: mypy
+        name: mypy
+        description: "MyPy static type checking"
+        entry: poetry run mypy
+        language: system
+        pass_filenames: false
+        args: [--config-file, user-service/pyproject.tomls]
+        types: [python]
+
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+    -   id: isort
+        entry: isort
+        args: [--settings-path, user-service/pyproject.toml]
+

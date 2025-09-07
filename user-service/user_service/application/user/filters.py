@@ -2,5 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class UserFiltersDTO:
+class UserFilters:
     username: str | None = None
+    username_ilike: str | None = None

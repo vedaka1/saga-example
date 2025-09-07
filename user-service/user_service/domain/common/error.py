@@ -11,3 +11,9 @@ class ApplicationError(Exception):
 class ObjectNotFoundError(ApplicationError):
     status_code: int = 404
     message: str = 'Object not found'
+
+
+@dataclass
+class ObjectAlreadyExistsError(ApplicationError):
+    status_code: int = 400
+    message: str = 'Object already exists'

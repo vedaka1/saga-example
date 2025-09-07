@@ -1,10 +1,11 @@
 from motor.core import AgnosticClient, AgnosticCollection
 
-from user_service.application.user.filters import UserFiltersDTO
+from user_service.application.user.filters import UserFilters
 from user_service.application.user.interfaces.repository import IUserRepository
 from user_service.domain.user.entity import UserEntity
 from user_service.infrastructure.db.mongo.filters.build import build_mongo_filters
 from user_service.infrastructure.db.mongo.user.converters import dict_to_user_entity, user_entity_to_dict
+from user_service.infrastructure.db.mongo.user.filters import UserFiltersMongo
 
 
 class MongoUserRepository(IUserRepository):
@@ -29,15 +30,22 @@ class MongoUserRepository(IUserRepository):
         else:
             return None
 
+    async def _delete_by(self, key: str, value: str) -> UserEntity | None:
+        await self._collection.delete_one({key: value})
+        return None
+
+    async def delete_by_id(self, entity_id: str) -> UserEntity | None:
+        return await self._delete_by('_id', entity_id)
+
     async def get_by_id(self, entity_id: str) -> UserEntity | None:
         return await self._get_by('_id', entity_id)
 
     async def get_by_username(self, username: str) -> UserEntity | None:
         return await self._get_by('username', username)
 
-    async def get_many(self, filters: UserFiltersDTO, offset: int, limit: int | None = None) -> list[UserEntity]:
+    async def get_many(self, filters: UserFilters, offset: int = 0, limit: int | None = None) -> list[UserEntity]:
         users: list[UserEntity] = []
-        _filters = build_mongo_filters(filters)
+        _filters = build_mongo_filters(filters, UserFiltersMongo)
         cursor = self._collection.find(_filters).skip(offset)
         if limit:
             cursor.limit(limit)
