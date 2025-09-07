@@ -1,0 +1,59 @@
+services:
+  user-service:
+    # depends_on:
+    #   user-service-postgres: 
+    #     condition: service_healthy
+    build: 
+      context: user-service/
+      dockerfile: .ci/Dockerfile
+    ports:
+     - 8000:8000
+    volumes:
+      - ./user-service/user_service:/app/user_service
+      - ./user-service/main.py:/app/main.py
+    env_file:
+      - user-service/.env.production
+    networks:
+      - internal
+      - default
+  
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - user-service-mongodb-data:/data/db
+    env_file:
+      - user-service/.env.production
+    networks:
+      - internal
+      - default
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    env_file:
+      - user-service/.env.production
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/ 
+    networks:
+      - internal
+      - default
+
+    
+volumes:
+  user-service-postgres-data:
+  user-service-mongodb-data:
+
+networks:
+  internal:
+    driver: bridge
+    internal: true
+  default:
+    driver: bridge
