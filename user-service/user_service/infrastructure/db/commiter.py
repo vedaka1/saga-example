@@ -1,19 +1,19 @@
-from motor.core import AgnosticClient
+from pymongo.asynchronous.client_session import AsyncClientSession
 
 from user_service.application.common.interfaces.commiter import ICommiter
 
 
 class MongoCommiter(ICommiter):
-    __slots__ = ('client',)
+    __slots__ = ('_session',)
 
-    def __init__(self, client: AgnosticClient) -> None:
-        self.client = client
+    def __init__(self, session: AsyncClientSession) -> None:
+        self._session = session
 
     async def commit(self) -> None:
-        pass
+        await self._session.commit_transaction()
 
     async def rollback(self) -> None:
-        pass
+        await self._session.abort_transaction()
 
     async def close(self) -> None:
-        self.client.close()
+        await self._session.end_session()

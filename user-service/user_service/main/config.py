@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from functools import lru_cache
 
 from user_service.main.environment import get_env_var
 
@@ -52,12 +53,15 @@ class MongoDBConfig:
 
 @dataclass
 class AppConfig:
-    db: PostgresqlConfig
     mongodb: MongoDBConfig
 
     @classmethod
     def load_from_env(cls) -> 'AppConfig':
         return cls(
-            PostgresqlConfig.load_from_env(),
-            MongoDBConfig.load_from_env(),
+            mongodb=MongoDBConfig.load_from_env(),
         )
+
+
+@lru_cache(1)
+def init_config() -> AppConfig:
+    return AppConfig.load_from_env()
