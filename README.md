@@ -1,5 +1,7 @@
 # Installation
 ## Docker-compose
+Create `.env` and `.env.production` from `.env.example` template
+
 ```bash
 docker compose -f ../docker-compose.yaml up -d
 ```
