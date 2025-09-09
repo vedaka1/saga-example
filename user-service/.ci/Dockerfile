@@ -1,21 +1,26 @@
 FROM python:3.12.6-slim-bullseye
+COPY --from=ghcr.io/astral-sh/uv:0.8.15 /uv /uvx /bin/
+ENV UV_PROJECT_ENVIRONMENT=/usr/local \
+    UV_LINK_MODE=copy \
+    UV_COMPILE_BYTECODE=1
 
 WORKDIR /app
 
-ENV PYTHONPATH=.
+RUN pip install --upgrade pip
+COPY uv.lock pyproject.toml /app/
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project --no-dev --no-editable
 
-RUN pip install --upgrade pip && pip install poetry && poetry config virtualenvs.create false
-
-COPY poetry.lock pyproject.toml ./
-
-RUN poetry install --without test --no-root --no-interaction --no-ansi
-
+    
 COPY user_service/ ./user_service
 COPY .env main.py ./
 COPY ./.ci/entrypoint.sh /app/.ci/entrypoint.sh
 
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev --no-editable
+
 RUN chmod +x /app/.ci/entrypoint.sh
-
 EXPOSE 8000
-
 CMD ["/bin/bash", "/app/.ci/entrypoint.sh"]
