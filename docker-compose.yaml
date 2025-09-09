@@ -3,6 +3,7 @@ services:
     # depends_on:
     #   user-service-postgres: 
     #     condition: service_healthy
+    profiles: ['dev']
     build: 
       context: user-service/
       dockerfile: .ci/Dockerfile
@@ -19,6 +20,7 @@ services:
   
   mongodb:
     image: mongo
+    profiles: ['dev']
     restart: always
     ports:
       - '27017:27017'
@@ -32,6 +34,7 @@ services:
 
   mongo-express:
     image: mongo-express
+    profiles: ['dev']
     restart: always
     ports:
       - 8081:8081
