@@ -1,15 +1,12 @@
-from dataclasses import dataclass
-
 from pydantic import BaseModel
 
 
-class UserCreateSchema(BaseModel):
+class UserCreateRequest(BaseModel):
     username: str
     email: str
 
 
-@dataclass
-class UserResponse:
+class UserResponse(BaseModel):
     id: str
     username: str
     email: str

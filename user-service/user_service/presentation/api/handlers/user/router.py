@@ -9,20 +9,20 @@ from user_service.infrastructure.db.commiter import MongoCommiter
 from user_service.infrastructure.db.mongo.client import init_mongo_db_client
 from user_service.infrastructure.db.mongo.user.__ini__ import init_user_repository
 from user_service.presentation.api.handlers.user.filters import UserFiltersSchema
-from user_service.presentation.api.handlers.user.schemas import UserCreateSchema, UserResponse
+from user_service.presentation.api.handlers.user.schemas import UserCreateRequest, UserResponse
 
-router = APIRouter()
+router = APIRouter(prefix='/users', tags=['Users'])
 
 
 @router.post(
-    '/users',
+    '',
     summary='Создание пользователя',
     responses={
         200: {'model': str},
         400: {'model': ApplicationError, 'description': ObjectAlreadyExistsError.message},
     },
 )
-async def create_user(create_data: UserCreateSchema) -> str:
+async def create_user(create_data: UserCreateRequest) -> str:
     client = init_mongo_db_client()
     user_repository = init_user_repository()
     interactor = CreateUserInteractor(user_repository, MongoCommiter(client))
@@ -31,7 +31,7 @@ async def create_user(create_data: UserCreateSchema) -> str:
 
 
 @router.get(
-    '/users/{user_id}',
+    '/{user_id}',
     summary='Получение пользователя по ID',
     responses={
         200: {'model': UserResponse},
@@ -46,7 +46,7 @@ async def get_user(user_id: str) -> UserResponse:
 
 
 @router.get(
-    '/users',
+    '',
     summary='Получение списка пользователей',
     responses={
         200: {'model': UserResponse},
@@ -64,7 +64,7 @@ async def get_users(
 
 
 @router.delete(
-    '/users/{user_id}',
+    '/{user_id}',
     summary='Удаление пользователя по ID',
     responses={
         200: {'model': UserResponse},
