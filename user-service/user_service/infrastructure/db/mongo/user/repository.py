@@ -4,11 +4,11 @@ from pymongo.asynchronous.database import AsyncDatabase
 
 from user_service.application.user.filters import UserFilters
 from user_service.application.user.interfaces.repository import IUserRepository
+from user_service.config import MongoDBConfig
 from user_service.domain.user.entity import UserEntity
 from user_service.infrastructure.db.mongo.filters.build import build_mongo_filters
 from user_service.infrastructure.db.mongo.user.converters import dict_to_user_entity, user_entity_to_dict
 from user_service.infrastructure.db.mongo.user.filters import UserFiltersMongo
-from user_service.main.config import init_config
 
 
 class MongoUserRepository(IUserRepository):
@@ -17,11 +17,11 @@ class MongoUserRepository(IUserRepository):
     def __init__(
         self,
         database: AsyncDatabase,
+        mongo_config: MongoDBConfig,
         *,
-        collection_name: str = init_config().mongodb.USER_COLLECTION_NAME,
         session: AsyncClientSession | None = None,
     ) -> None:
-        self._collection = database[collection_name]
+        self._collection = database[mongo_config.USER_COLLECTION_NAME]
         self._session = session
 
     async def _create_indexes(self) -> None:

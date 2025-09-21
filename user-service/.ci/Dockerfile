@@ -15,8 +15,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
     
 COPY user_service/ ./user_service
-COPY .env main.py ./
-COPY ./.ci/entrypoint.sh /app/.ci/entrypoint.sh
+COPY .ci/ /app/.ci
+COPY .env ./
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --no-editable

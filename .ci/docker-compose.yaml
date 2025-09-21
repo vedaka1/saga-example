@@ -1,9 +1,6 @@
 services:
   user-service:
-    # depends_on:
-    #   user-service-postgres: 
-    #     condition: service_healthy
-    profiles: ['dev']
+    profiles: ['dev', 'prod']
     build: 
       context: user-service/
       dockerfile: .ci/Dockerfile
@@ -11,7 +8,6 @@ services:
      - 8000:8000
     volumes:
       - ./user-service/user_service:/app/user_service
-      - ./user-service/main.py:/app/main.py
     env_file:
       - user-service/.env.production
     networks:
@@ -20,14 +16,14 @@ services:
   
   mongodb:
     image: mongo
-    profiles: ['dev']
+    profiles: ['dev', 'prod']
     restart: always
     ports:
       - '27017:27017'
     volumes:
-      - user-service-mongodb-data:/data/db
+      - mongodb-data:/data/db
     env_file:
-      - user-service/.env.production
+      - .env.production
     networks:
       - internal
       - default
@@ -39,20 +35,14 @@ services:
     ports:
       - 8081:8081
     env_file:
-      - user-service/.env.production
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin
-      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/ 
+      - .env.production
     networks:
       - internal
       - default
 
     
 volumes:
-  user-service-postgres-data:
-  user-service-mongodb-data:
+  mongodb-data:
 
 networks:
   internal:

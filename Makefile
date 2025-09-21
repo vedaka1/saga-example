@@ -1,7 +1,8 @@
 DC = docker compose
 ENV_PROD = .env.production
-DC_DEV = $(DC) -f $(CURDIR)/docker-compose.yaml \
+DC_DEV = $(DC) -f $(CURDIR)/.ci/docker-compose.yaml \
 		--project-directory . \
+		--env-file $(ENV_PROD) \
 		--env-file user-service/$(ENV_PROD)
 
 dev:
